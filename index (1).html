@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TMTC.PROD — Studio d'Enregistrement · Bordeaux</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #FF6B00;
+    --orange-light: #FF8C33;
+    --orange-glow: rgba(255,107,0,0.15);
+    --black: #0A0A0A;
+    --dark: #111111;
+    --dark2: #161616;
+    --grey: #888888;
+    --white: #F5F5F5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--orange);
+    border-radius: 50%;
+    position: fixed; z-index: 9999;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(255,107,0,0.5);
+    border-radius: 50%;
+    position: fixed; z-index: 9998;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, width 0.3s, height 0.3s;
+  }
+  body:hover .cursor { opacity: 1; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(10,10,10,0.95), transparent);
+    backdrop-filter: blur(10px);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--white);
+  }
+  .nav-logo span { color: var(--orange); }
+
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a {
+    color: var(--grey);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--orange); }
+
+  .nav-cta {
+    background: var(--orange);
+    color: var(--black) !important;
+    padding: 10px 24px !important;
+    border-radius: 2px;
+    font-weight: 700 !important;
+    color: var(--black) !important;
+  }
+  .nav-cta:hover { background: var(--orange-light); color: var(--black) !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 0 60px;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: url('https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=1600&q=80') center/cover no-repeat;
+    filter: brightness(0.15) saturate(0.5);
+  }
+
+  .hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,107,0,0.08) 0%, transparent 50%, rgba(10,10,10,0.8) 100%);
+  }
+
+  .hero-grid-lines {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,107,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,107,0,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .hero-content { position: relative; z-index: 2; max-width: 900px; }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 14vw, 180px);
+    line-height: 0.9;
+    letter-spacing: -2px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+  .hero-title .orange { color: var(--orange); }
+  .hero-title .outline {
+    -webkit-text-stroke: 2px var(--white);
+    color: transparent;
+  }
+
+  .hero-sub {
+    margin-top: 32px;
+    font-size: 18px;
+    color: var(--grey);
+    font-weight: 400;
+    max-width: 500px;
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .hero-actions {
+    margin-top: 48px;
+    display: flex; gap: 20px; align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .btn-primary {
+    background: var(--orange);
+    color: var(--black);
+    padding: 16px 40px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--orange-light); transform: translateY(-2px); }
+
+  .btn-secondary {
+    color: var(--white);
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 10px;
+    transition: color 0.2s;
+  }
+  .btn-secondary::after {
+    content: '→';
+    transition: transform 0.2s;
+  }
+  .btn-secondary:hover { color: var(--orange); }
+  .btn-secondary:hover::after { transform: translateX(4px); }
+
+  .hero-stats {
+    position: absolute; right: 60px; bottom: 80px;
+    display: flex; flex-direction: column; gap: 32px;
+    z-index: 2;
+    opacity: 0;
+    animation: fadeUp 0.8s 1s forwards;
+  }
+  .stat { text-align: right; }
+  .stat-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--orange);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--grey);
+    text-transform: uppercase;
+  }
+
+  .scroll-indicator {
+    position: absolute; bottom: 40px; left: 60px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 10px; letter-spacing: 3px; color: var(--grey);
+    text-transform: uppercase;
+    z-index: 2;
+  }
+  .scroll-line {
+    width: 40px; height: 1px;
+    background: var(--orange);
+    animation: scrollLine 1.5s ease-in-out infinite;
+  }
+  @keyframes scrollLine { 0%,100% { transform: scaleX(1); } 50% { transform: scaleX(0.3); transform-origin: left; } }
+
+  /* TICKER */
+  .ticker {
+    background: var(--orange);
+    padding: 14px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .ticker-inner {
+    display: inline-flex; gap: 60px;
+    animation: ticker 20s linear infinite;
+  }
+  .ticker span {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 3px;
+    color: var(--black);
+  }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* SECTIONS */
+  section { padding: 120px 60px; }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 7vw, 90px);
+    line-height: 0.95;
+    margin-bottom: 20px;
+  }
+
+  /* ABOUT */
+  .about { background: var(--dark); }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    margin-top: 60px;
+  }
+  .about-text p {
+    font-size: 16px;
+    color: var(--grey);
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+  .about-text strong { color: var(--white); }
+
+  .about-image {
+    position: relative;
+    height: 500px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .about-image img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: brightness(0.7) saturate(0.8);
+    transition: filter 0.4s;
+  }
+  .about-image:hover img { filter: brightness(0.9) saturate(1); }
+  .about-image::before {
+    content: '';
+    position: absolute; inset: 0;
+    border: 1px solid rgba(255,107,0,0.3);
+    z-index: 1;
+    border-radius: 4px;
+  }
+  .about-image::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 40%;
+    background: linear-gradient(to top, rgba(10,10,10,0.8), transparent);
+    z-index: 2;
+  }
+
+  .feature-list { margin-top: 40px; display: flex; flex-direction: column; gap: 16px; }
+  .feature-item {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 20px;
+    background: rgba(255,107,0,0.05);
+    border-left: 2px solid var(--orange);
+    border-radius: 0 4px 4px 0;
+  }
+  .feature-item .icon { font-size: 20px; }
+  .feature-item p { font-size: 14px; color: var(--grey); }
+  .feature-item strong { color: var(--white); display: block; font-size: 15px; }
+
+  /* TARIFS */
+  .tarifs { background: var(--black); }
+  .tarifs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 60px;
+  }
+  .tarif-card {
+    background: var(--dark2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 4px;
+    padding: 48px 36px;
+    position: relative;
+    transition: border-color 0.3s, transform 0.3s;
+    overflow: hidden;
+  }
+  .tarif-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--orange);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+    transform-origin: left;
+  }
+  .tarif-card:hover::before { transform: scaleX(1); }
+  .tarif-card:hover { border-color: rgba(255,107,0,0.3); transform: translateY(-4px); }
+  .tarif-card.featured {
+    border-color: var(--orange);
+    background: linear-gradient(135deg, rgba(255,107,0,0.08), var(--dark2));
+  }
+  .tarif-card.featured::before { transform: scaleX(1); }
+
+  .tarif-badge {
+    background: var(--orange);
+    color: var(--black);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    border-radius: 2px;
+    display: inline-block;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+
+  .tarif-duration {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--grey);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .tarif-price {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .tarif-price span { font-size: 32px; color: var(--orange); }
+  .tarif-desc {
+    font-size: 13px;
+    color: var(--grey);
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+  .tarif-includes { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .tarif-includes li {
+    font-size: 13px;
+    color: var(--grey);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .tarif-includes li::before {
+    content: '✓';
+    color: var(--orange);
+    font-weight: 700;
+    font-size: 12px;
+  }
+
+  .tarif-cta {
+    margin-top: 36px;
+    width: 100%;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--white);
+    padding: 14px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .tarif-cta:hover, .tarif-card.featured .tarif-cta {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: var(--black);
+  }
+
+  /* GALERIE */
+  .galerie { background: var(--dark); }
+  .galerie-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 300px 300px;
+    gap: 12px;
+    margin-top: 60px;
+  }
+  .galerie-item {
+    overflow: hidden;
+    border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+  }
+  .galerie-item:first-child { grid-row: span 2; }
+  .galerie-item img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s, filter 0.3s;
+    filter: brightness(0.7) saturate(0.7);
+  }
+  .galerie-item:hover img {
+    transform: scale(1.05);
+    filter: brightness(0.9) saturate(1);
+  }
+  .galerie-item::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(255,107,0,0.15), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .galerie-item:hover::after { opacity: 1; }
+
+  /* HORAIRES */
+  .horaires { background: var(--black); }
+  .horaires-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    margin-top: 60px;
+    align-items: start;
+  }
+  .planning-table { width: 100%; border-collapse: collapse; }
+  .planning-table th {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--orange);
+    text-transform: uppercase;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255,107,0,0.3);
+  }
+  .planning-table td {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--grey);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .planning-table td:first-child { color: var(--white); font-weight: 600; }
+  .planning-table td .open {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: #4CAF50;
+    font-size: 12px;
+  }
+  .planning-table td .open::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: #4CAF50;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .planning-table td .closed { color: var(--grey); font-size: 12px; }
+  .planning-table tr:hover td { background: rgba(255,107,0,0.03); }
+
+  .horaires-info { display: flex; flex-direction: column; gap: 24px; }
+  .info-card {
+    background: var(--dark2);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 4px;
+    padding: 28px;
+  }
+  .info-card h3 {
+    font-size: 14px;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    color: var(--orange);
+    text-transform: uppercase;
+  }
+  .info-card p { font-size: 14px; color: var(--grey); line-height: 1.6; }
+
+  /* CONTACT */
+  .contact { background: var(--dark); }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    margin-top: 60px;
+  }
+  .contact-info { display: flex; flex-direction: column; gap: 32px; }
+  .contact-item { display: flex; gap: 20px; align-items: flex-start; }
+  .contact-icon {
+    width: 44px; height: 44px;
+    background: rgba(255,107,0,0.1);
+    border: 1px solid rgba(255,107,0,0.3);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .contact-item h4 { font-size: 12px; letter-spacing: 2px; color: var(--orange); text-transform: uppercase; margin-bottom: 4px; }
+  .contact-item p { font-size: 15px; color: var(--white); }
+  .contact-item a { color: var(--white); text-decoration: none; }
+  .contact-item a:hover { color: var(--orange); }
+
+  .contact-form { display: flex; flex-direction: column; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group label { font-size: 11px; letter-spacing: 2px; color: var(--grey); text-transform: uppercase; }
+  .form-group input, .form-group select, .form-group textarea {
+    background: var(--dark2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 2px;
+    padding: 14px 16px;
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--orange);
+  }
+  .form-group select option { background: var(--dark2); }
+  .form-group textarea { resize: vertical; min-height: 100px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* FOOTER */
+  footer {
+    background: var(--black);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 3px;
+  }
+  .footer-logo span { color: var(--orange); }
+  .footer-copy {
+    font-size: 12px;
+    color: var(--grey);
+    letter-spacing: 1px;
+  }
+  .footer-socials { display: flex; gap: 20px; }
+  .footer-socials a {
+    width: 40px; height: 40px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+    color: var(--white);
+  }
+  .footer-socials a:hover { border-color: var(--orange); background: rgba(255,107,0,0.1); }
+
+  /* CHATBOT */
+  .chat-trigger {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    width: 60px; height: 60px;
+    background: var(--orange);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(255,107,0,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    font-size: 22px;
+  }
+  .chat-trigger:hover { transform: scale(1.1); box-shadow: 0 12px 40px rgba(255,107,0,0.5); }
+  .chat-trigger .chat-badge {
+    position: absolute; top: -4px; right: -4px;
+    width: 16px; height: 16px;
+    background: #4CAF50;
+    border-radius: 50%;
+    border: 2px solid var(--black);
+  }
+
+  .chat-panel {
+    position: fixed;
+    bottom: 104px; right: 32px;
+    width: 380px;
+    background: var(--dark2);
+    border: 1px solid rgba(255,107,0,0.3);
+    border-radius: 12px;
+    z-index: 999;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+    overflow: hidden;
+    animation: chatIn 0.3s ease;
+  }
+  .chat-panel.open { display: flex; }
+  @keyframes chatIn { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: none; } }
+
+  .chat-header {
+    background: linear-gradient(135deg, var(--orange), #CC5500);
+    padding: 18px 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .chat-avatar {
+    width: 36px; height: 36px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .chat-header-info h4 {
+    font-size: 14px; font-weight: 700;
+    color: var(--black);
+    margin-bottom: 2px;
+  }
+  .chat-header-info p {
+    font-size: 11px; color: rgba(0,0,0,0.6);
+  }
+  .chat-close {
+    margin-left: auto;
+    background: none; border: none;
+    color: rgba(0,0,0,0.6);
+    font-size: 18px; cursor: pointer;
+    padding: 4px; line-height: 1;
+    transition: color 0.2s;
+  }
+  .chat-close:hover { color: var(--black); }
+
+  .chat-messages {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+    display: flex; flex-direction: column; gap: 12px;
+    max-height: 360px;
+    min-height: 200px;
+  }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: transparent; }
+  .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,107,0,0.3); border-radius: 2px; }
+
+  .msg {
+    max-width: 85%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    animation: msgIn 0.2s ease;
+  }
+  @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .msg.bot {
+    background: rgba(255,255,255,0.06);
+    color: var(--white);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .msg.user {
+    background: var(--orange);
+    color: var(--black);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    font-weight: 600;
+  }
+
+  .chat-quick-replies {
+    padding: 0 20px 12px;
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .quick-reply {
+    background: rgba(255,107,0,0.1);
+    border: 1px solid rgba(255,107,0,0.3);
+    color: var(--orange);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .quick-reply:hover { background: rgba(255,107,0,0.2); }
+
+  .chat-input-area {
+    padding: 16px 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; gap: 10px; align-items: center;
+  }
+  .chat-input {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .chat-input:focus { border-color: rgba(255,107,0,0.4); }
+  .chat-input::placeholder { color: var(--grey); }
+  .chat-send {
+    width: 38px; height: 38px;
+    background: var(--orange);
+    border: none; border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .chat-send:hover { background: var(--orange-light); }
+
+  .typing {
+    display: flex; gap: 4px; align-items: center;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 12px; border-bottom-left-radius: 4px;
+    align-self: flex-start;
+    width: fit-content;
+  }
+  .typing span {
+    width: 6px; height: 6px;
+    background: var(--grey);
+    border-radius: 50%;
+    animation: typing 1s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typing { 0%,100% { opacity: 0.3; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-4px); } }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section { padding: 80px 24px; }
+    .hero { padding: 0 24px; }
+    .hero-stats { display: none; }
+    .about-grid, .tarifs-grid, .horaires-grid, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    .galerie-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+    .galerie-item:first-child { grid-column: span 2; grid-row: span 1; }
+    footer { flex-direction: column; gap: 24px; text-align: center; padding: 40px 24px; }
+    .chat-panel { width: calc(100vw - 32px); right: 16px; bottom: 96px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">TMTC<span>.</span>PROD</div>
+  <ul class="nav-links">
+    <li><a href="#about">Studio</a></li>
+    <li><a href="#tarifs">Tarifs</a></li>
+    <li><a href="#galerie">Galerie</a></li>
+    <li><a href="#horaires">Horaires</a></li>
+    <li><a href="#contact" class="nav-cta">Réserver</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-grid-lines"></div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">// Studio d'enregistrement · Bordeaux</p>
+    <h1 class="hero-title">
+      TMTC<span class="orange">.</span><br>
+      <span class="outline">PROD</span>
+    </h1>
+    <p class="hero-sub">Ton son. Professionnel. Accessible.<br>À deux pas de Bordeaux Bastide.</p>
+    <div class="hero-actions">
+      <a href="#tarifs" class="btn-primary">Voir les tarifs</a>
+      <a href="#contact" class="btn-secondary">Réserver une session</a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-number">15€</div>
+      <div class="stat-label">/ heure</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">100%</div>
+      <div class="stat-label">tout genre</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">7J</div>
+      <div class="stat-label">sur 7 except. dim</div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    scroll
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span>ENREGISTREMENT</span>
+    <span>·</span>
+    <span>MIX OFFERT 1ÈRE FOIS</span>
+    <span>·</span>
+    <span>PRE-MIX INCLUS</span>
+    <span>·</span>
+    <span>BORDEAUX BASTIDE</span>
+    <span>·</span>
+    <span>RAP · RNB · TRAP · POP · AFRO</span>
+    <span>·</span>
+    <span>INGÉ SON INCLUS</span>
+    <span>·</span>
+    <span>15€ / HEURE</span>
+    <span>·</span>
+    <span>ENREGISTREMENT</span>
+    <span>·</span>
+    <span>MIX OFFERT 1ÈRE FOIS</span>
+    <span>·</span>
+    <span>PRE-MIX INCLUS</span>
+    <span>·</span>
+    <span>BORDEAUX BASTIDE</span>
+    <span>·</span>
+    <span>RAP · RNB · TRAP · POP · AFRO</span>
+    <span>·</span>
+    <span>INGÉ SON INCLUS</span>
+    <span>·</span>
+    <span>15€ / HEURE</span>
+    <span>·</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <p class="section-label reveal">// 01 — Le studio</p>
+  <h2 class="section-title reveal">TON SON,<br>TON NIVEAU.</h2>
+
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p><strong>TMTC.PROD</strong> c'est un studio d'enregistrement professionnel installé au cœur de Bordeaux Bastide. Un espace pensé pour les artistes qui veulent un <strong>son propre, mixé, prêt à balancer</strong> — sans se ruiner.</p>
+      <p>Que tu sois en train de poser ton premier couplet ou de finaliser un projet, on t'accueille avec le même niveau d'exigence. Ingé son inclus, booth isolé, matériel pro.</p>
+      <p>Tous les genres. Toutes les ambitions.</p>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="icon">🎙️</div>
+          <div>
+            <strong>Booth professionnel</strong>
+            <p>Isolation acoustique, microphone haut de gamme, monitoring de studio</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="icon">🎛️</div>
+          <div>
+            <strong>Ingénieur son inclus</strong>
+            <p>Chaque session inclut un ingé son dédié pour un résultat optimal</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="icon">🎁</div>
+          <div>
+            <strong>Mix offert — 1ère fois</strong>
+            <p>Pour ta première venue, le pre-mix est entièrement gratuit</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="icon">📍</div>
+          <div>
+            <strong>Bordeaux Bastide</strong>
+            <p>Facilement accessible, stationnement à proximité</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-image reveal">
+      <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&q=80" alt="Studio TMTC.PROD" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- TARIFS -->
+<section class="tarifs" id="tarifs">
+  <p class="section-label reveal">// 02 — Tarifs</p>
+  <h2 class="section-title reveal">SIMPLE.<br>CLAIR. JUSTE.</h2>
+
+  <div class="tarifs-grid">
+    <div class="tarif-card reveal">
+      <div class="tarif-duration">1 heure</div>
+      <div class="tarif-price"><span>€</span>15</div>
+      <p class="tarif-desc">Une heure pour poser tes punchlines. Idéal pour un couplet, un feat ou un test session.</p>
+      <ul class="tarif-includes">
+        <li>Prise de son · booth isolé</li>
+        <li>Ingénieur son inclus</li>
+        <li>Pre-Mix OFFERT (1ère venue)</li>
+        <li>Fichier WAV haute qualité</li>
+      </ul>
+      <button class="tarif-cta" onclick="openChatWithMessage('Je veux réserver 1 heure à 15€')">Réserver</button>
+    </div>
+
+    <div class="tarif-card featured reveal">
+      <div class="tarif-badge">⭐ Best value</div>
+      <div class="tarif-duration">2 heures</div>
+      <div class="tarif-price"><span>€</span>30</div>
+      <p class="tarif-desc">Le format idéal. Deux heures pour vraiment poser, retravailler, et repartir avec quelque chose de solide.</p>
+      <ul class="tarif-includes">
+        <li>Prise de son · booth isolé</li>
+        <li>Ingénieur son inclus</li>
+        <li>Pre-Mix OFFERT (1ère venue)</li>
+        <li>Fichier WAV haute qualité</li>
+        <li>Retouches en session incluses</li>
+      </ul>
+      <button class="tarif-cta" onclick="openChatWithMessage('Je veux réserver 2 heures à 30€')">Réserver</button>
+    </div>
+
+    <div class="tarif-card reveal">
+      <div class="tarif-badge" style="background: rgba(255,107,0,0.15); color: var(--orange); border: 1px solid var(--orange);">🎁 Offre spéciale</div>
+      <div class="tarif-duration">1ère venue</div>
+      <div class="tarif-price" style="font-size: 48px;">MIX<br>GRATUIT</div>
+      <p class="tarif-desc">Pour ta première venue au studio, le pre-mix est entièrement offert. Tu repars avec un son fini, prêt à distribuer.</p>
+      <ul class="tarif-includes">
+        <li>Pre-Mix inclus & offert</li>
+        <li>Applicable sur 1h ou 2h</li>
+        <li>Offre découverte</li>
+      </ul>
+      <button class="tarif-cta" onclick="openChatWithMessage('Je veux profiter du mix gratuit 1ère fois')">J'en profite</button>
+    </div>
+  </div>
+</section>
+
+<!-- GALERIE -->
+<section class="galerie" id="galerie">
+  <p class="section-label reveal">// 03 — Galerie</p>
+  <h2 class="section-title reveal">L'AMBIANCE<br>DU STUDIO.</h2>
+
+  <div class="galerie-grid reveal">
+    <div class="galerie-item">
+      <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&q=80" alt="Studio de mixage" loading="lazy">
+    </div>
+    <div class="galerie-item">
+      <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=80" alt="Microphone studio" loading="lazy">
+    </div>
+    <div class="galerie-item">
+      <img src="https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=600&q=80" alt="Console de mixage" loading="lazy">
+    </div>
+    <div class="galerie-item">
+      <img src="https://images.unsplash.com/photo-1519508234439-4f23643125c1?w=600&q=80" alt="Enregistrement vocal" loading="lazy">
+    </div>
+    <div class="galerie-item">
+      <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="Production musicale" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- HORAIRES -->
+<section class="horaires" id="horaires">
+  <p class="section-label reveal">// 04 — Disponibilités</p>
+  <h2 class="section-title reveal">QUAND<br>VENIR ?</h2>
+
+  <div class="horaires-grid">
+    <div class="reveal">
+      <table class="planning-table">
+        <thead>
+          <tr>
+            <th>Jour</th>
+            <th>Horaires</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Lundi</td>
+            <td>08h00 – 19h00</td>
+            <td><span class="open">Ouvert</span></td>
+          </tr>
+          <tr>
+            <td>Mardi</td>
+            <td>08h00 – 19h00</td>
+            <td><span class="open">Ouvert</span></td>
+          </tr>
+          <tr>
+            <td>Mercredi</td>
+            <td>08h00 – 19h00</td>
+            <td><span class="open">Ouvert</span></td>
+          </tr>
+          <tr>
+            <td>Jeudi</td>
+            <td>08h00 – 19h00</td>
+            <td><span class="open">Ouvert</span></td>
+          </tr>
+          <tr>
+            <td>Vendredi</td>
+            <td>08h00 – 19h00</td>
+            <td><span class="open">Ouvert</span></td>
+          </tr>
+          <tr>
+            <td>Samedi</td>
+            <td>08h00 – 19h00</td>
+            <td><span class="open">Ouvert</span></td>
+          </tr>
+          <tr>
+            <td>Dimanche</td>
+            <td>—</td>
+            <td><span class="closed">Repos</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px; color:var(--grey); margin-top:16px; font-family:'Space Mono',monospace;">
+        ⏸ Pause déjeuner : 12h00 → 13h00
+      </p>
+    </div>
+
+    <div class="horaires-info reveal">
+      <div class="info-card">
+        <h3>📅 Comment réserver ?</h3>
+        <p>Utilise le chatbot en bas à droite pour vérifier les créneaux disponibles et réserver ta session en quelques secondes. Réponse rapide garantie.</p>
+      </div>
+      <div class="info-card">
+        <h3>📍 Localisation</h3>
+        <p>Bordeaux Bastide — accès facile depuis le centre-ville. Stationnement à proximité. Retrouve-nous sur Instagram <strong>@tmtc.prod</strong></p>
+      </div>
+      <div class="info-card">
+        <h3>💳 Paiement</h3>
+        <p>Cash · Virement bancaire · Lydia<br>Règlement le jour de la session.</p>
+      </div>
+      <div class="info-card">
+        <h3>⚡ Annulation</h3>
+        <p>Préviens-nous au moins 2h avant ton créneau. Pas de surprise, on reste flexibles.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <p class="section-label reveal">// 05 — Contact & Réservation</p>
+  <h2 class="section-title reveal">RÉSERVE<br>TA SESSION.</h2>
+
+  <div class="contact-grid">
+    <div class="contact-info reveal">
+      <div class="contact-item">
+        <div class="contact-icon">📍</div>
+        <div>
+          <h4>Adresse</h4>
+          <p>Bordeaux Bastide, Bordeaux</p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">📸</div>
+        <div>
+          <h4>Instagram</h4>
+          <p><a href="https://instagram.com/tmtc.prod" target="_blank">@tmtc.prod</a></p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">🎙️</div>
+        <div>
+          <h4>Sessions disponibles</h4>
+          <p>Lun → Sam · 08h – 19h<br><em style="color:var(--grey); font-size:13px;">Sauf dimanche</em></p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon">💬</div>
+        <div>
+          <h4>Chatbot disponible</h4>
+          <p>Utilise notre assistant pour vérifier les dispo et réserver instantanément →</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <form class="contact-form" name="reservation" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="handleFormSubmit(event)">
+        <input type="hidden" name="form-name" value="reservation">
+        <input type="hidden" name="bot-field" style="display:none">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Prénom / Nom d'artiste</label>
+            <input type="text" name="nom" placeholder="Ton nom" required>
+          </div>
+          <div class="form-group">
+            <label>Téléphone / Instagram</label>
+            <input type="text" name="contact" placeholder="+33 6 ... / @pseudo">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Formule souhaitée</label>
+          <select name="formule" required>
+            <option value="">— Choisis une formule —</option>
+            <option>1 Heure — 15€ (Pre-Mix Offert)</option>
+            <option>2 Heures — 30€ (Pre-Mix Offert)</option>
+            <option>1ère fois — Mix Gratuit</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date souhaitée</label>
+            <input type="date" name="date" required>
+          </div>
+          <div class="form-group">
+            <label>Heure de début</label>
+            <select name="heure_debut" required>
+              <option value="">-- Début --</option>
+              <option>08:00</option>
+              <option>08:30</option>
+              <option>09:00</option>
+              <option>09:30</option>
+              <option>10:00</option>
+              <option>10:30</option>
+              <option>11:00</option>
+              <option>11:30</option>
+              <option>13:00</option>
+              <option>13:30</option>
+              <option>14:00</option>
+              <option>14:30</option>
+              <option>15:00</option>
+              <option>15:30</option>
+              <option>16:00</option>
+              <option>16:30</option>
+              <option>17:00</option>
+              <option>17:30</option>
+              <option>18:00</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Heure de fin</label>
+            <select name="heure_fin" required>
+              <option value="">-- Fin --</option>
+              <option>09:00</option>
+              <option>09:30</option>
+              <option>10:00</option>
+              <option>10:30</option>
+              <option>11:00</option>
+              <option>11:30</option>
+              <option>12:00</option>
+              <option>13:00</option>
+              <option>14:00</option>
+              <option>14:30</option>
+              <option>15:00</option>
+              <option>15:30</option>
+              <option>16:00</option>
+              <option>16:30</option>
+              <option>17:00</option>
+              <option>17:30</option>
+              <option>18:00</option>
+              <option>19:00</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Durée estimée</label>
+            <input type="text" name="duree" placeholder="Ex: 2h" readonly id="dureeEstimee" style="background:rgba(255,107,0,0.05); color:var(--orange);">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Infos complémentaires</label>
+          <textarea name="infos" placeholder="Genre musical, nombre de morceaux, première venue ?..."></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%; text-align:center; margin-top:8px;">
+          Envoyer ma demande →
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">TMTC<span>.</span>PROD</div>
+    <p style="font-size:12px; color:var(--grey); margin-top:4px; letter-spacing:1px;">Studio d'enregistrement · Bordeaux</p>
+  </div>
+  <p class="footer-copy">© 2025 TMTC.PROD — Tous droits réservés</p>
+  <div class="footer-socials">
+    <a href="https://instagram.com/tmtc.prod" target="_blank" title="Instagram">📸</a>
+    <a href="#" title="TikTok">🎵</a>
+    <a href="#" title="YouTube">▶️</a>
+  </div>
+</footer>
+
+<!-- CHATBOT -->
+<button class="chat-trigger" onclick="toggleChat()" id="chatTrigger">
+  💬
+  <div class="chat-badge"></div>
+</button>
+
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header">
+    <div class="chat-avatar">🎙️</div>
+    <div class="chat-header-info">
+      <h4>TMTC Assistant</h4>
+      <p>Disponibilités & réservations</p>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+
+  <div class="chat-messages" id="chatMessages"></div>
+
+  <div class="chat-quick-replies" id="quickReplies">
+    <button class="quick-reply" onclick="sendQuickReply('📅 Voir les dispo')">📅 Voir les dispo</button>
+    <button class="quick-reply" onclick="sendQuickReply('💰 Tarifs')">💰 Tarifs</button>
+    <button class="quick-reply" onclick="sendQuickReply('🎁 Mix gratuit ?')">🎁 Mix gratuit ?</button>
+    <button class="quick-reply" onclick="sendQuickReply('📍 Où êtes-vous ?')">📍 Adresse</button>
+  </div>
+
+  <div class="chat-input-area">
+    <input class="chat-input" id="chatInput" placeholder="Écris ton message..." onkeypress="handleChatKey(event)">
+    <button class="chat-send" onclick="sendChatMessage()">➤</button>
+  </div>
+</div>
+
+<script>
+// CURSOR
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursorRing');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  setTimeout(() => {
+    cursorRing.style.left = e.clientX + 'px';
+    cursorRing.style.top = e.clientY + 'px';
+  }, 80);
+});
+document.querySelectorAll('a, button, .tarif-card, .galerie-item').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.width = '20px'; cursor.style.height = '20px';
+    cursorRing.style.width = '50px'; cursorRing.style.height = '50px';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.width = '12px'; cursor.style.height = '12px';
+    cursorRing.style.width = '36px'; cursorRing.style.height = '36px';
+  });
+});
+
+// SCROLL REVEAL
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// TELEGRAM CONFIG
+const TELEGRAM_TOKEN = '8643096073:AAErlKialF3CGZXmQzL-SqzCHSts1iXHo8';
+const TELEGRAM_CHAT_ID = '6518883174';
+
+async function sendTelegramNotif(message) {
+  const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: message,
+        parse_mode: 'HTML'
+      })
+    });
+  } catch(err) {
+    console.log('Telegram error:', err);
+  }
+}
+
+// FORM — Netlify Forms natif
+async function handleFormSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn = form.querySelector('button[type="submit"]');
+
+  btn.textContent = 'Envoi en cours...';
+  btn.disabled = true;
+
+  const formData = new FormData(form);
+
+  try {
+    await fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(formData).toString()
+    });
+
+    btn.textContent = '✅ Demande envoyée !';
+    btn.style.background = '#4CAF50';
+
+    setTimeout(() => {
+      btn.textContent = 'Envoyer ma demande →';
+      btn.style.background = '';
+      btn.disabled = false;
+      form.reset();
+    }, 3000);
+
+  } catch(err) {
+    btn.textContent = 'Erreur — réessaie';
+    btn.style.background = '#e53935';
+    btn.disabled = false;
+  }
+}
+
+// CHATBOT
+let chatOpen = false;
+let chatInitialized = false;
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const panel = document.getElementById('chatPanel');
+  panel.classList.toggle('open', chatOpen);
+  if (chatOpen && !chatInitialized) {
+    chatInitialized = true;
+    setTimeout(() => addBotMessage("Wesh 👋 Bienvenue chez **TMTC.PROD** — Studio d'enregistrement à Bordeaux.\n\nComment je peux t'aider ?"), 300);
+  }
+}
+
+function openChatWithMessage(msg) {
+  if (!chatOpen) toggleChat();
+  setTimeout(() => sendQuickReply(msg), 400);
+}
+
+function addBotMessage(text) {
+  const msgs = document.getElementById('chatMessages');
+  const typing = document.createElement('div');
+  typing.className = 'typing';
+  typing.innerHTML = '<span></span><span></span><span></span>';
+  msgs.appendChild(typing);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  setTimeout(() => {
+    typing.remove();
+    const msg = document.createElement('div');
+    msg.className = 'msg bot';
+    msg.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    msgs.appendChild(msg);
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 1000);
+}
+
+function addUserMessage(text) {
+  const msgs = document.getElementById('chatMessages');
+  const msg = document.createElement('div');
+  msg.className = 'msg user';
+  msg.textContent = text;
+  msgs.appendChild(msg);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function sendQuickReply(text) {
+  addUserMessage(text);
+  document.getElementById('quickReplies').style.display = 'none';
+  respondToMessage(text.toLowerCase());
+}
+
+function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addUserMessage(text);
+  respondToMessage(text.toLowerCase());
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter') sendChatMessage();
+}
+
+// Historique conversation pour Claude
+let conversationHistory = [];
+
+async function respondToMessage(msg) {
+  // Ajoute le message utilisateur à l'historique
+  conversationHistory.push({ role: "user", content: msg });
+
+  try {
+    const response = await fetch("/.netlify/functions/claude", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: conversationHistory })
+    });
+
+    const data = await response.json();
+    const reply = data.reply || "Désolé, une erreur s'est produite. Réessaie !";
+
+    // Ajoute la réponse à l'historique
+    conversationHistory.push({ role: "assistant", content: reply });
+
+    addBotMessage(reply);
+
+  } catch(err) {
+    addBotMessage("Désolé, je suis temporairement indisponible. Contacte-nous directement sur Instagram **@tmtc.prod** 🙏");
+  }
+}
+
+// Staggered reveal for tarif cards
+const cards = document.querySelectorAll('.tarif-card');
+cards.forEach((card, i) => {
+  card.style.transitionDelay = (i * 0.15) + 's';
+});
+
+// Calcul automatique de la durée
+document.addEventListener('change', function(e) {
+  if (e.target.name === 'heure_debut' || e.target.name === 'heure_fin') {
+    const debut = document.querySelector('[name="heure_debut"]').value;
+    const fin = document.querySelector('[name="heure_fin"]').value;
+    const dureeField = document.getElementById('dureeEstimee');
+    if (debut && fin) {
+      const [dh, dm] = debut.split(':').map(Number);
+      const [fh, fm] = fin.split(':').map(Number);
+      const totalMin = (fh * 60 + fm) - (dh * 60 + dm);
+      if (totalMin > 0) {
+        const h = Math.floor(totalMin / 60);
+        const m = totalMin % 60;
+        dureeField.value = h > 0 ? (m > 0 ? h + 'h' + m : h + 'h') : m + 'min';
+      } else {
+        dureeField.value = '⚠️ Heure invalide';
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
